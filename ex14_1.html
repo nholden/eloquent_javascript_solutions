@@ -1,0 +1,16 @@
+<!doctype html>
+
+<html>
+  <body>
+    <input type="text">
+    <script>
+      var field = document.querySelector("input");
+      var bannedKeys = [81, 87, 88];
+      field.addEventListener("keydown", function(event) {
+        if (bannedKeys.indexOf(event.keyCode) > -1) {
+          event.preventDefault();
+        }
+      });
+    </script>
+  </body>
+</html>
