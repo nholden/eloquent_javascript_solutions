@@ -1,0 +1,42 @@
+<!doctype html>
+
+<html>
+  <body>
+    <input type="text" id="field">
+    <div id="suggestions" style="cursor: pointer"></div>
+
+    <script>
+      // Builds up an array with global variable names, like
+      // 'alert', 'document', and 'scrollTo'
+      var terms = [];
+      for (var name in window)
+        terms.push(name);
+
+      var field = document.querySelector("#field");
+      var suggestions = document.querySelector("#suggestions");
+      for (var term in terms) {
+        var suggestion = document.createElement("div");
+        suggestion.id = terms[term] + "_suggestion";
+        suggestion.textContent = terms[term];
+        suggestion.style.display = "none";
+        suggestions.appendChild(suggestion);
+        suggestion.addEventListener("click", function() {
+          field.value = this.textContent;
+          refreshSuggestions();
+        });
+      }
+      function refreshSuggestions() {
+        var regexp = new RegExp("^" + field.value);
+        for (var term in terms) {
+          var suggestion = document.querySelector("#" + terms[term] + "_suggestion");
+          if (field.value && terms[term].match(regexp)) {
+            suggestion.style.display = "block";
+          } else {
+            suggestion.style.display = "none";
+          }
+        }
+      };
+      field.addEventListener("input", function() { refreshSuggestions(); });
+    </script>
+  </body>
+</html>
