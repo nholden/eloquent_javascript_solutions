@@ -1,0 +1,101 @@
+<!doctype html>
+
+<html>
+  <body>
+    <div id="grid"></div>
+    <button id="next">Next generation</button>
+
+    <script>
+      function buildGrid(size) {
+        var grid = [];
+        for (var i = 0; i < size; i++) {
+          var row = [];
+          for (var j = 0; j < size; j++) {
+            if (Math.random() > 0.5) {
+              row.push(1);
+            } else {
+              row.push(0);
+            }
+          }
+          grid.push(row);
+        }
+        return grid;
+      }
+
+      function countLiveNeighbors(grid, x, y) {
+        var count = 0;
+        var xCoords = [x-1, x, x+1];
+        var yCoords = [y-1, y, y+1];
+        yCoords.forEach(function(yCoord) {
+          if (grid[yCoord]) {
+            xCoords.forEach(function(xCoord) {
+              if (grid[yCoord][xCoord]) {
+                count += grid[yCoord][xCoord];
+              }
+            });
+          }
+        });
+        if (grid[y][x] == 1) {
+          count -= 1;
+        }
+        return count;
+      }
+
+      function nextGeneration(grid) {
+        var newGrid = [];
+        grid.forEach(function(row, y) {
+          var newRow = [];
+          row.forEach(function(cell, x) {
+            var liveNeighbors = countLiveNeighbors(grid, x, y);
+            if (cell == 1) {
+              if (liveNeighbors < 2 || liveNeighbors > 3) {
+                newRow.push(0);
+              } else {
+                newRow.push(1);
+              }
+            } else {
+              if (liveNeighbors == 3) {
+                newRow.push(1);
+              } else {
+                newRow.push(0);
+              }
+            }
+          });
+          newGrid.push(newRow);
+        });
+        return newGrid;
+      }
+
+      function refreshGrid(grid) {
+        grid.forEach(function(row, y) {
+          row.forEach(function(cell, x) {
+            var cellCheckbox = document.querySelector("#box_" + x + "_" + y);
+            cellCheckbox.checked = cell;
+          });
+        });
+      }
+
+      var grid = buildGrid(20);
+      grid.forEach(function(row, y) {
+        var rowDiv = document.createElement("div");
+        document.body.appendChild(rowDiv);
+        row.forEach(function(cell, x) {
+          var cellCheckbox = document.createElement("input");
+          cellCheckbox.type = "checkbox";
+          cellCheckbox.id = "box_" + x + "_" + y;
+          cellCheckbox.checked = cell;
+          rowDiv.appendChild(cellCheckbox);
+          cellCheckbox.addEventListener("change", function() {
+            grid[y][x] = cellCheckbox.checked ? 1 : 0;
+          });
+        });
+      });
+
+      var nextButton = document.querySelector("#next");
+      nextButton.addEventListener("click", function() {
+        grid = nextGeneration(grid);
+        refreshGrid(grid);
+      });
+    </script>
+  </body>
+</html>
